@@ -1,4 +1,24 @@
 
+.example
+  &:after
+    visibility: hidden
+    display: block
+    font-size: 0
+    content: " "
+    clear: both
+    height: 0
+  * html              &
+    zoom: 1 /* IE6 */
+  *:first-child+html  & 
+    zoom: 1 /* IE7 */
+  .explaination
+    width: 33%
+    float: left
+  .tryIt
+    width: 66%
+    float: left
+
+
 textarea.full
   -webkit-box-sizing: border-box
   -moz-box-sizing: border-box
