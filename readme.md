@@ -17,9 +17,9 @@ You may need to put it on a web server to be able to use the localstorage
 
 * Browse to index.html
 * Click on the big text area to give it focus 
-* Press ```Ctrl+E``` ( or ```Cmd+E``` in osX) 
+* Press ```Ctrl+shift+E``` ( or ```Cmd+shift+E``` in osX) 
 * Type ```help``` 
-* Press ```Ctrl+E``` again to show help
+* Press ```Ctrl+shift+E``` again to show help
 
 ```
 ~~help~~

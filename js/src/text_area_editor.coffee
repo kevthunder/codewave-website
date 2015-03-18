@@ -1,7 +1,7 @@
 class @Codewave.DomKeyListener
   startListening: (target) ->
     target.onkeydown = (e) => 
-      if e.keyCode == 69 && e.ctrlKey
+      if e.keyCode == 69 && e.ctrlKey && e.shiftKey
         e.preventDefault()
         if @onActivationKey?
           @onActivationKey()

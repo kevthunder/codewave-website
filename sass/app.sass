@@ -1,22 +1,99 @@
+$mainColor: #73ae2d
+$almostBlack: #333
+$counterColor: #fff
+$gray: #666
+$partLeft: 33%
+$partRight: 66%
 
-.example
+@mixin clearfix
   &:after
-    visibility: hidden
-    display: block
-    font-size: 0
-    content: " "
+    content: ""
+    display: table
     clear: both
-    height: 0
-  * html              &
-    zoom: 1 /* IE6 */
-  *:first-child+html  & 
-    zoom: 1 /* IE7 */
+
+html, body
+  margin: 0
+  
+body
+  font-family: 'Montserrat', sans-serif
+  color: $almostBlack
+
+header
+  padding: 30px 30px 38px 30px
+  @include clearfix
+  position: relative
+  .logo
+    margin-bottom: 15px
+  .intro
+    -webkit-box-sizing: border-box
+    -moz-box-sizing: border-box
+    box-sizing: border-box
+    width: $partLeft
+    margin: 0
+    padding-right: 30px
+  .actions
+    -webkit-box-sizing: border-box
+    -moz-box-sizing: border-box
+    box-sizing: border-box
+    width: $partRight
+    position: absolute
+    bottom: 0
+    right: 0
+    padding: 0 0 5px 15px
+    .btDownload
+      padding: 15px
+      background-color: $mainColor
+      color: $counterColor
+      display: inline-block
+      vertical-align: bottom
+      font-size: 26px
+      font-family: 'Orbitron', sans-serif
+      text-decoration: none
+      margin-right: 30px
+      margin-bottom: 34px
+      &:hover
+        background-color: $gray
+      span
+        font-size: 12px
+        font-family: 'Montserrat', sans-serif
+        display: block
+    .tryItLabel
+      padding: 0 90px 29px 0
+      margin: 0 50% 0 0
+      background: url('../img/arrow.png') right bottom no-repeat
+      display: inline-block
+      vertical-align: bottom
+      font-size: 26px
+      color: #73ae2d
+      font-family: 'Orbitron', sans-serif
+  
+.example
+  &.odd
+    background-color: #eee
+  @include clearfix
   .explaination
-    width: 33%
+    -webkit-box-sizing: border-box
+    -moz-box-sizing: border-box
+    box-sizing: border-box
+    width: $partLeft
     float: left
+    padding: 15px 15px 15px 30px
   .tryIt
-    width: 66%
-    float: left
+    -webkit-box-sizing: border-box
+    -moz-box-sizing: border-box
+    box-sizing: border-box
+    width: $partRight
+    float: right
+    padding: 15px 
+    textarea
+      min-height: 100px
+      -webkit-box-sizing: border-box
+      -moz-box-sizing: border-box
+      box-sizing: border-box
+      border: 0
+      border-left: 5px solid $mainColor
+      padding: 10px
+      width: 100%
 
 
 textarea.full

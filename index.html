@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Document</title>
+  <title>CodeWave.it</title>
+  <link href='http://fonts.googleapis.com/css?family=Orbitron|Montserrat' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" type="text/css" href="css/app.css" media="all" />
   <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
   
@@ -34,48 +35,55 @@
 </head>
 <body>
 <div class="test"></div>
-
-<div class="example">
+<header>
+  <h1><img src="img/codewave-logo.png" alt="CodeWave.it" class="logo"></h1>
+  <p class="intro">Create abbreviation for you own code snippets and expand them with a push of a button, or use those already provided. Write code faster with this tool designed to give you what you need to be more productive without leaving your favorite text editor.</p>
+  <div class="actions">
+    <a href="" class="btDownload">Download<span>See available editors</span></a>
+    <p class="tryItLabel">Try It!</p>
+  </div>
+</header>
+<article class="example odd">
   <div class="explaination">
     <p>To start click inside the ~~help~~ text on the right then press "Ctrl"+"shift"+"E" ( or "Cmd"+"shift"+"E" in osX) </p>
   </div>
   <div class="tryIt">
     <textarea name="" class="codewave" data-lang="js">~~help~~</textarea>
   </div>
-</div>
-<div class="example">
+</article>
+<article class="example even">
   <div class="explaination">
     <p>The classic Hello World.</p>
   </div>
   <div class="tryIt">
     <textarea name="" class="codewave" data-lang="js">~~hello~~</textarea>
   </div>
-</div>
-<div class="example">
+</article>
+<article class="example odd">
   <div class="explaination">
     <p>Codewave allows you to make you own commands (or abbreviations) put your content inside "source" the do "save". Try adding any text that is on your mind.</p>
   </div>
   <div class="tryIt">
     <textarea name="" class="codewave" data-lang="js">~~edit my_new_command~~</textarea>
   </div>
-</div>
-<div class="example">
+</article>
+<article class="example even">
   <div class="explaination">
     <p>If you did the last step right, you should see your text when youdo the following command. It is now saved and you can use it whenever you want.</p>
   </div>
   <div class="tryIt">
     <textarea name="" class="codewave" data-lang="js">~~my_new_command~~</textarea>
   </div>
-</div>
-<div class="example">
+</article>
+<article class="example odd">
   <div class="explaination">
     <p>For more information on creating your own commands.</p>
   </div>
   <div class="tryIt">
     <textarea name="" class="codewave" data-lang="js">~~help:editing~~</textarea>
   </div>
-</div>
-<div class="example">
+</article>
+<article class="example even">
   <div class="explaination">
     <p>Codewave come with many prexisting commands. Here an example of javascript abreviations</p>
   </div>
@@ -88,8 +96,8 @@
 ~~/f~~
     </textarea>
   </div>
-</div>
-<div class="example">
+</article>
+<article class="example odd">
   <div class="explaination">
     <p>CodeWave come with the exellent Emmet ( <a href="http://emmet.io/">http://emmet.io/</a> ) to provide event more abreviations. Emmet will fire automaticaly if you are in a html or css file and no other command of the same name were defined.</p>
   </div>
@@ -100,8 +108,8 @@
 ~~emmet m2 css~~
     </textarea>
   </div>
-</div>
-<div class="example">
+</article>
+<article class="example even">
   <div class="explaination">
     <p>Commands are stored in name spaces and some of the namespaces are active depending of the context or they can be called explicitly. The two following commands are the same and will display the currently  active namespace. The first command command works because the core namespace is active.</p>
   </div>
@@ -111,8 +119,8 @@
 ~~core:namespace~~
     </textarea>
   </div>
-</div>
-<div class="example">
+</article>
+<article class="example odd">
   <div class="explaination">
     <p>you can make an namespace active with the following command.</p>
     <p>Then check the namespaces again</p>
@@ -123,8 +131,8 @@
 ~~namespace~~
     </textarea>
   </div>
-</div>
-<div class="example">
+</article>
+<article class="example even">
   <div class="explaination">
     <p>All the dialogs(windows) of codewave are made with the command "box" and you can use it in your own commands. you can also use a "close" command to make it easy to get rid of the window.</p>
   </div>
@@ -136,7 +144,7 @@ The box will scale with the content you put in it
 ~~/box~~
     </textarea>
   </div>
-</div>
+</article>
 
 <textarea name="" id="Editor" class="_full" data-lang="js">
 ~~help~~
