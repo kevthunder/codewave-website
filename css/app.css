@@ -1,3 +1,18 @@
+@charset "UTF-8";
+@font-face {
+  font-family: "fontello";
+  src: url("../font/fontello.eot?19843796");
+  src: url("../font/fontello.eot?19843796#iefix") format("embedded-opentype"), url("../font/fontello.woff?19843796") format("woff"), url("../font/fontello.ttf?19843796") format("truetype"), url("../font/fontello.svg?19843796#fontello") format("svg");
+  font-weight: normal;
+  font-style: normal; }
+/* Chrome hack: SVG is rendered more smooth in Windozze. 100% magic, uncomment if you need it. */
+/* Note, that will break hinting! In other OS-es font will be not as sharp as it could be */
+/*@media screen and (-webkit-min-device-pixel-ratio:0) {
+ *  @font-face {
+ *    font-family: 'fontello';
+ *    src: url('../font/fontello.svg?19843796#fontello') format('svg');
+ *  }
+ *} */
 html, body {
   margin: 0; }
 
@@ -5,60 +20,332 @@ body {
   font-family: "Montserrat", sans-serif;
   color: #333; }
 
+a {
+  color: #73ae2d;
+  text-decoration: none; }
+  a:hover {
+    color: #000;
+    text-decoration: underline; }
+
+h2 {
+  font-size: 2.5em;
+  color: #73ae2d;
+  font-family: "Orbitron", sans-serif; }
+
+h3 {
+  font-size: 1.8em; }
+
+section {
+  padding: 30px 30px 30px 30px; }
+
 header {
-  padding: 30px 30px 38px 30px;
-  position: relative; }
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 30px 30px 38px 16px;
+  position: absolute;
+  top: 0; }
   header:after {
     content: "";
     display: table;
     clear: both; }
+  header.fixed {
+    position: fixed;
+    z-index: 50;
+    background-color: #fff;
+    padding-top: 5px;
+    padding-bottom: 0;
+    border-bottom: 1px solid #73ae2d; }
+    header.fixed .logo {
+      margin: 0; }
+      header.fixed .logo img {
+        height: 50px; }
+    header.fixed nav a span.label {
+      display: none; }
+    header.fixed nav .sublimeText a span.icon {
+      height: 35px;
+      width: 35px;
+      background: url(../img/sublimetext-logo-small.png) no-repeat 0 top;
+      margin-bottom: 0; }
+    header.fixed nav .sublimeText a:hover span.icon {
+      background-position: 0 -85px; }
+    header.fixed nav .npp a span.icon {
+      height: 35px;
+      width: 43px;
+      background: url(../img/npp-logo-small.png) no-repeat 0 top;
+      margin-bottom: 0; }
+    header.fixed nav .npp a:hover span.icon {
+      background-position: 0 -78px; }
+    header.fixed nav .js a {
+      padding-top: 0;
+      height: 35px; }
+    header.fixed nav ul li ul {
+      padding-top: 5px; }
+    header.fixed nav ul li ul li {
+      vertical-align: top; }
+    header.fixed .social {
+      bottom: 15px; }
   header .logo {
-    margin-bottom: 15px; }
-  header .intro {
+    margin-bottom: 15px;
+    float: left; }
+  header nav {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 66%;
+    float: right;
+    padding: 0 0 0 15px; }
+    header nav ul, header nav li {
+      margin: 0;
+      padding: 0;
+      list-style: none; }
+    header nav a {
+      color: #666; }
+      header nav a:hover {
+        text-decoration: none; }
+    header nav .examplesLink {
+      display: none; }
+    header nav .sublimeText a span.icon {
+      height: 52px;
+      width: 52px;
+      display: block;
+      background: url(../img/sublimetext-logo.png) no-repeat 0 top;
+      margin-bottom: 3px; }
+    header nav .sublimeText a:hover span.icon {
+      background-position: 0 -105px; }
+    header nav .npp a span.icon {
+      height: 52px;
+      width: 64px;
+      display: block;
+      background: url(../img/npp-logo.png) no-repeat 0 top;
+      margin-bottom: 3px; }
+    header nav .npp a:hover span.icon {
+      background-position: 0 -98px; }
+    header nav .js a {
+      padding-top: 55px; }
+    header nav ul li {
+      display: inline-block;
+      padding: 0 30px 0 0; }
+      header nav ul li a {
+        display: block; }
+      header nav ul li ul {
+        padding-top: 15px; }
+        header nav ul li ul li {
+          border-left: 5px solid #73ae2d;
+          padding: 0 30px 0 15px; }
+  header .social {
+    position: absolute;
+    bottom: 72px;
+    right: 30px; }
+    header .social ul, header .social li {
+      margin: 0;
+      padding: 0;
+      list-style: none; }
+    header .social ul li {
+      display: inline-block;
+      padding: 0 0 0 0; }
+      header .social ul li a {
+        font-size: 1.6em;
+        display: block;
+        position: relative;
+        /* '¯áå' */ }
+        header .social ul li a span {
+          top: 100%;
+          left: 50%;
+          width: 80px;
+          margin: 0 0 0 -40px;
+          font-size: 0.5em;
+          position: absolute;
+          text-align: center;
+          display: none; }
+        header .social ul li a:after {
+          content: "";
+          font-family: "fontello";
+          font-style: normal;
+          font-weight: normal;
+          speak: none;
+          display: inline-block;
+          text-decoration: none;
+          font-size: inherit;
+          width: 1em;
+          margin-right: 0.2em;
+          text-align: center;
+          /* opacity: .8; */
+          /* For safety - reset parent styles, that can break glyph codes */
+          font-variant: normal;
+          text-transform: none;
+          /* fix buttons height, for twitter bootstrap */
+          line-height: 1em;
+          /* Animation center compensation - margins should be symmetric */
+          /* remove if not needed */
+          margin-left: 0.2em;
+          /* you can be more comfortable with increased icons size */
+          /* font-size: 120%; */
+          /* Uncomment for 3D effect */
+          /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */ }
+        header .social ul li a:hover {
+          text-decoration: none; }
+          header .social ul li a:hover span {
+            display: block; }
+        header .social ul li a:before {
+          position: absolute;
+          z-index: 1;
+          top: 0.16em;
+          left: 0.38em;
+          display: block;
+          text-indent: 0;
+          color: #fff;
+          text-align: center; }
+        header .social ul li a:after {
+          font-size: 1.4em;
+          display: block;
+          text-indent: 0; }
+    header .social .twitter a {
+      /* '¯áé' */ }
+      header .social .twitter a:before {
+        content: "";
+        font-family: "fontello";
+        font-style: normal;
+        font-weight: normal;
+        speak: none;
+        display: inline-block;
+        text-decoration: none;
+        font-size: inherit;
+        width: 1em;
+        margin-right: 0.2em;
+        text-align: center;
+        /* opacity: .8; */
+        /* For safety - reset parent styles, that can break glyph codes */
+        font-variant: normal;
+        text-transform: none;
+        /* fix buttons height, for twitter bootstrap */
+        line-height: 1em;
+        /* Animation center compensation - margins should be symmetric */
+        /* remove if not needed */
+        margin-left: 0.2em;
+        /* you can be more comfortable with increased icons size */
+        /* font-size: 120%; */
+        /* Uncomment for 3D effect */
+        /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */ }
+    header .social .facebook a {
+      /* '¯áü' */ }
+      header .social .facebook a:before {
+        content: "";
+        font-family: "fontello";
+        font-style: normal;
+        font-weight: normal;
+        speak: none;
+        display: inline-block;
+        text-decoration: none;
+        font-size: inherit;
+        width: 1em;
+        margin-right: 0.2em;
+        text-align: center;
+        /* opacity: .8; */
+        /* For safety - reset parent styles, that can break glyph codes */
+        font-variant: normal;
+        text-transform: none;
+        /* fix buttons height, for twitter bootstrap */
+        line-height: 1em;
+        /* Animation center compensation - margins should be symmetric */
+        /* remove if not needed */
+        margin-left: 0.2em;
+        /* you can be more comfortable with increased icons size */
+        /* font-size: 120%; */
+        /* Uncomment for 3D effect */
+        /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */ }
+    header .social .github a {
+      /* '¯áâ' */ }
+      header .social .github a:before {
+        content: "";
+        font-family: "fontello";
+        font-style: normal;
+        font-weight: normal;
+        speak: none;
+        display: inline-block;
+        text-decoration: none;
+        font-size: inherit;
+        width: 1em;
+        margin-right: 0.2em;
+        text-align: center;
+        /* opacity: .8; */
+        /* For safety - reset parent styles, that can break glyph codes */
+        font-variant: normal;
+        text-transform: none;
+        /* fix buttons height, for twitter bootstrap */
+        line-height: 1em;
+        /* Animation center compensation - margins should be symmetric */
+        /* remove if not needed */
+        margin-left: 0.2em;
+        /* you can be more comfortable with increased icons size */
+        /* font-size: 120%; */
+        /* Uncomment for 3D effect */
+        /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */ }
+
+section#intro {
+  margin-top: 200px; }
+  section#intro p {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     width: 33%;
     margin: 0;
     padding-right: 30px; }
-  header .actions {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    width: 66%;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    padding: 0 0 5px 15px; }
-    header .actions .btDownload {
-      padding: 15px;
-      background-color: #73ae2d;
-      color: #fff;
-      display: inline-block;
-      vertical-align: bottom;
-      font-size: 26px;
-      font-family: "Orbitron", sans-serif;
-      text-decoration: none;
-      margin-right: 30px;
-      margin-bottom: 34px; }
-      header .actions .btDownload:hover {
-        background-color: #666; }
-      header .actions .btDownload span {
-        font-size: 12px;
-        font-family: "Montserrat", sans-serif;
-        display: block; }
-    header .actions .tryItLabel {
-      padding: 0 90px 29px 0;
-      margin: 0 50% 0 0;
-      background: url("../img/arrow.png") right bottom no-repeat;
-      display: inline-block;
-      vertical-align: bottom;
-      font-size: 26px;
-      color: #73ae2d;
-      font-family: "Orbitron", sans-serif; }
 
-.example.odd {
+.tryItLabel {
+  padding: 0 0 0 30px;
+  margin: 0 50% 0 0;
+  display: inline-block;
+  vertical-align: bottom;
+  font-size: 1.6em;
+  color: #73ae2d;
+  font-family: "Orbitron", sans-serif;
+  /* '¯áä' */ }
+  .tryItLabel:after {
+    content: "";
+    display: table;
+    clear: both; }
+  .tryItLabel:before {
+    content: "";
+    font-family: "fontello";
+    font-style: normal;
+    font-weight: normal;
+    speak: none;
+    display: inline-block;
+    text-decoration: none;
+    font-size: inherit;
+    width: 1em;
+    margin-right: 0.2em;
+    text-align: center;
+    /* opacity: .8; */
+    /* For safety - reset parent styles, that can break glyph codes */
+    font-variant: normal;
+    text-transform: none;
+    /* fix buttons height, for twitter bootstrap */
+    line-height: 1em;
+    /* Animation center compensation - margins should be symmetric */
+    /* remove if not needed */
+    margin-left: 0.2em;
+    /* you can be more comfortable with increased icons size */
+    /* font-size: 120%; */
+    /* Uncomment for 3D effect */
+    /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */ }
+  .tryItLabel:before {
+    font-size: 3em;
+    float: right; }
+
+section#examples {
+  padding: 30px 0 30px 0;
+  position: relative; }
+  section#examples .tryItLabel {
+    position: absolute;
+    left: 33%;
+    top: -3em; }
+
+.odd {
   background-color: #eee; }
+
 .example:after {
   content: "";
   display: table;
@@ -86,6 +373,51 @@ header {
     border-left: 5px solid #73ae2d;
     padding: 10px;
     width: 100%; }
+
+section#download {
+  padding: 30px 0 30px 0; }
+  section#download h2 {
+    padding: 0 30px 0 30px; }
+  section#download > div {
+    padding: 30px; }
+  section#download h3 {
+    margin-top: 0; }
+  section#download .editor_site {
+    position: relative;
+    top: -2.7em;
+    font-size: 0.8em; }
+
+.github-get {
+  display: block;
+  /* '¯áâ' */ }
+  .github-get:before {
+    content: "";
+    font-family: "fontello";
+    font-style: normal;
+    font-weight: normal;
+    speak: none;
+    display: inline-block;
+    text-decoration: none;
+    font-size: inherit;
+    width: 1em;
+    margin-right: 0.2em;
+    text-align: center;
+    /* opacity: .8; */
+    /* For safety - reset parent styles, that can break glyph codes */
+    font-variant: normal;
+    text-transform: none;
+    /* fix buttons height, for twitter bootstrap */
+    line-height: 1em;
+    /* Animation center compensation - margins should be symmetric */
+    /* remove if not needed */
+    margin-left: 0.2em;
+    /* you can be more comfortable with increased icons size */
+    /* font-size: 120%; */
+    /* Uncomment for 3D effect */
+    /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */ }
+  .github-get:before {
+    color: #333;
+    font-size: 1.5em; }
 
 textarea.full {
   -webkit-box-sizing: border-box;

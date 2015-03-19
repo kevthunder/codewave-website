@@ -1,9 +1,14 @@
 $mainColor: #73ae2d
 $almostBlack: #333
+$black: #000
 $counterColor: #fff
+$bg: #fff
+$altBg: #eee
 $gray: #666
 $partLeft: 33%
 $partRight: 66%
+
+@import "icons"
 
 @mixin clearfix
   &:after
@@ -18,58 +23,214 @@ body
   font-family: 'Montserrat', sans-serif
   color: $almostBlack
 
+a
+  color: $mainColor
+  text-decoration: none
+  &:hover
+    color: $black
+    text-decoration: underline
+
+h2
+  font-size: 2.5em
+  color: $mainColor
+  font-family: 'Orbitron', sans-serif
+  
+h3
+  font-size: 1.8em
+
+section
+  padding: 30px 30px 30px 30px
+  
 header
-  padding: 30px 30px 38px 30px
+  -webkit-box-sizing: border-box
+  -moz-box-sizing: border-box
+  box-sizing: border-box
+  width: 100%
+  padding: 30px 30px 38px 16px
   @include clearfix
-  position: relative
+  position: absolute
+  top: 0
+  &.fixed
+    position: fixed
+    z-index: 50
+    background-color: $bg
+    padding-top: 5px
+    padding-bottom: 0
+    border-bottom: 1px solid $mainColor
+    .logo
+      margin: 0
+      a
+        display:block
+      img
+        height: 50px
+    nav
+      a 
+        span.label
+          display: none
+      .sublimeText a
+        span.icon
+          height: 35px
+          width: 35px
+          background: url(../img/sublimetext-logo-small.png) no-repeat 0 top
+          margin-bottom: 0
+        &:hover span.icon
+          background-position: 0 -85px
+      .npp a
+        span.icon
+          height: 35px
+          width: 43px
+          background: url(../img/npp-logo-small.png) no-repeat 0 top
+          margin-bottom: 0
+        &:hover span.icon
+          background-position: 0 -78px
+      .js a
+        padding-top: 0
+        height: 35px
+      ul li ul
+        padding-top: 5px
+      ul li ul li
+        vertical-align: top
+    .social
+      bottom: 15px
   .logo
     margin-bottom: 15px
-  .intro
+    float: left
+  nav
+    -webkit-box-sizing: border-box
+    -moz-box-sizing: border-box
+    box-sizing: border-box
+    width: $partRight
+    float: right
+    padding: 0 0 0 15px
+    ul, li
+      margin: 0
+      padding: 0
+      list-style: none
+    a
+      color: $gray
+      &:hover
+        text-decoration: none
+    .examplesLink
+      display: none
+    .sublimeText a
+      span.icon
+        height: 52px
+        width: 52px
+        display: block
+        background: url(../img/sublimetext-logo.png) no-repeat 0 top
+        margin-bottom: 3px
+      &:hover span.icon
+        background-position: 0 -105px
+    .npp a
+      span.icon
+        height: 52px
+        width: 64px
+        display: block
+        background: url(../img/npp-logo.png) no-repeat 0 top
+        margin-bottom: 3px
+      &:hover span.icon
+        background-position: 0 -98px
+    .js a
+      padding-top: 55px
+    ul 
+      li
+        display: inline-block
+        padding: 0 30px 0 0
+        a
+          display: block
+        ul 
+          padding-top: 15px
+          li
+            border-left: 5px solid $mainColor
+            padding: 0 30px 0 15px
+  .social
+    position: absolute
+    bottom: 72px
+    right: 30px
+    ul, li
+      margin: 0
+      padding: 0
+      list-style: none
+    ul li 
+      display: inline-block
+      padding: 0 0 0 0
+      a
+        font-size: 1.6em
+        display: block
+        position: relative
+        span
+          top: 100% 
+          left: 50%
+          width: 80px
+          margin: 0 0 0 -40px
+          font-size: 0.5em
+          position: absolute
+          text-align: center
+          display: none
+        @include icon-hexagone(after)
+        &:hover
+          text-decoration: none
+          span
+            display: block
+        &:before
+          position: absolute
+          z-index: 1
+          top: 0.16em
+          left: 0.38em
+          display: block
+          text-indent: 0
+          color: $counterColor
+          text-align: center
+        &:after
+          font-size: 1.4em
+          display: block
+          text-indent: 0
+    .twitter a
+      @include icon-twitter
+    .facebook a
+      @include icon-facebook-squared
+    .github a
+      @include icon-github-circled
+          
+      
+    
+section#intro
+  margin-top: 200px
+  p 
     -webkit-box-sizing: border-box
     -moz-box-sizing: border-box
     box-sizing: border-box
     width: $partLeft
     margin: 0
     padding-right: 30px
-  .actions
-    -webkit-box-sizing: border-box
-    -moz-box-sizing: border-box
-    box-sizing: border-box
-    width: $partRight
+      
+    
+.tryItLabel
+  @include clearfix
+  padding: 0 0 0 30px
+  margin: 0 50% 0 0
+  display: inline-block
+  vertical-align: bottom
+  font-size: 1.6em
+  color: $mainColor
+  font-family: 'Orbitron', sans-serif
+  @include icon-tryit-arrow
+  &:before
+    font-size: 3em
+    float: right
+    
+section#examples
+  padding: 30px 0 30px 0
+  position: relative
+  .tryItLabel
     position: absolute
-    bottom: 0
-    right: 0
-    padding: 0 0 5px 15px
-    .btDownload
-      padding: 15px
-      background-color: $mainColor
-      color: $counterColor
-      display: inline-block
-      vertical-align: bottom
-      font-size: 26px
-      font-family: 'Orbitron', sans-serif
-      text-decoration: none
-      margin-right: 30px
-      margin-bottom: 34px
-      &:hover
-        background-color: $gray
-      span
-        font-size: 12px
-        font-family: 'Montserrat', sans-serif
-        display: block
-    .tryItLabel
-      padding: 0 90px 29px 0
-      margin: 0 50% 0 0
-      background: url('../img/arrow.png') right bottom no-repeat
-      display: inline-block
-      vertical-align: bottom
-      font-size: 26px
-      color: #73ae2d
-      font-family: 'Orbitron', sans-serif
+    left: $partLeft
+    top: -3em
+  
+.odd
+  background-color: $altBg
   
 .example
-  &.odd
-    background-color: #eee
   @include clearfix
   .explaination
     -webkit-box-sizing: border-box
@@ -96,6 +257,28 @@ header
       width: 100%
 
 
+section#download
+  padding: 30px 0 30px 0
+  h2
+    padding: 0 30px 0 30px
+  &>div
+    padding: 30px
+  h3
+    margin-top: 0
+  .editor_site
+    position: relative
+    top: -2.7em
+    font-size: 0.8em
+  
+      
+.github-get
+  display: block
+  @include icon-github-circled
+  &:before
+    color: $almostBlack
+    font-size: 1.5em
+    
+
 textarea.full
   -webkit-box-sizing: border-box
   -moz-box-sizing: border-box
@@ -106,3 +289,4 @@ textarea.full
   left: 0
   right: 0
   bottom: 0
+  

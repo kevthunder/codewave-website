@@ -1,0 +1,72 @@
+@font-face
+  font-family: 'fontello'
+  src: url('../font/fontello.eot?19843796')
+  src: url('../font/fontello.eot?19843796#iefix') format("embedded-opentype"), url('../font/fontello.woff?19843796') format("woff"), url('../font/fontello.ttf?19843796') format("truetype"), url('../font/fontello.svg?19843796#fontello') format("svg")
+  font-weight: normal
+  font-style: normal
+
+
+/* Chrome hack: SVG is rendered more smooth in Windozze. 100% magic, uncomment if you need it.
+/* Note, that will break hinting! In other OS-es font will be not as sharp as it could be
+/*
+ *@media screen and (-webkit-min-device-pixel-ratio:0) {
+ *  @font-face {
+ *    font-family: 'fontello';
+ *    src: url('../font/fontello.svg?19843796#fontello') format('svg');
+ *  }
+ *}
+
+@mixin icon($code,$pos: before)
+  &:#{$pos}
+    content: $code
+    font-family: "fontello"
+    font-style: normal
+    font-weight: normal
+    speak: none
+    display: inline-block
+    text-decoration: none
+    font-size: inherit
+    width: 1em
+    margin-right: .2em
+    text-align: center
+    /* opacity: .8;
+    /* For safety - reset parent styles, that can break glyph codes
+    font-variant: normal
+    text-transform: none
+    /* fix buttons height, for twitter bootstrap
+    line-height: 1em
+    /* Animation center compensation - margins should be symmetric
+    /* remove if not needed
+    margin-left: .2em
+    /* you can be more comfortable with increased icons size
+    /* font-size: 120%;
+    /* Uncomment for 3D effect
+    /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3);
+
+@mixin icon-linkedin-squared
+  @include icon('\e800')
+  /* ''
+
+@mixin icon-facebook-squared
+  @include icon('\e801')
+  /* ''
+
+@mixin icon-twitter
+  @include icon('\e802')
+  /* ''
+
+@mixin icon-github-circled
+  @include icon('\e803')
+  /* ''
+
+@mixin icon-tryit-arrow
+  @include icon('\e804')
+  /* ''
+
+@mixin icon-right-dir
+  @include icon('\e805')
+  /* ''
+  
+@mixin icon-hexagone($pos: before)
+  @include icon('\e806',$pos)
+  /* ''
