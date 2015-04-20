@@ -1,54 +1,88 @@
+# [pawa python]
+#   replace Codewave.util. ''
+
 class StrPos
   constructor: (@pos,@str) ->
-    #
   end: ->
     @pos + @str.length
 
 class Pos
   constructor: (@start,@end) ->
-    #
   containsPt: (pt) ->
     return @start <= pt and pt <= @end
   containsPos: (pos) ->
     return @start <= pos.start and pos.end <= @end
+  copy: ->
+    return new Pos(@start,@end)
+    
 class WrappedPos extends Pos
   constructor: (@start,@innerStart,@innerEnd,@end) ->
-    #
   innerContainsPt: (pt) ->
     return @innerStart <= pt and pt <= @innerEnd
   innerContainsPos: (pos) ->
     return @innerStart <= pos.start and pos.end <= @innerEnd
+  copy: ->
+    return new WrappedPos(@start,@innerStart,@innerEnd,@end)
 
 class Size
   constructor: (@width,@height) ->
-    #
     
 class Replacement
   constructor: (@start, @end, @text, @prefix ='', @suffix = '') ->
-    #
+    @selections = []
   resPosBeforePrefix: ->
-    @start+@prefix.length+@text.length
+    return @start+@prefix.length+@text.length
   resEnd: -> 
-    @start+@prefix.length+@text.length+@suffix.length
+    return @start+@prefix.length+@text.length+@suffix.length
   applyToEditor: (editor) ->
-    editor.spliceText(@start,@end,@prefix+@text+@suffix)
-    
+    editor.spliceText(@start, @end, @finalText(editor))
+  originalTextWith: (editor) ->
+    editor.textSubstr(@start, @end)
+  finalText: (editor = null) ->
+    if @text == '%original%'
+      if editor?
+        text = @originalTextWith(editor)
+      else
+        text = ''
+    else
+      text = @text
+    text = @prefix+text+@suffix
+    return text
+  offsetAfter: () -> 
+    if @text == '%original%'
+      return @prefix.length+@suffix.length
+    else
+      return @finalText().length - (@end - @start)
+  applyOffset: (offset)->
+    if offset != 0
+      @start += offset
+      @end += offset
+      for sel in @selections
+        sel.start += offset
+        sel.end += offset
+    return this
+  selectContent: -> 
+    @selections = [new Pos(@prefix.length+@start, @prefix.length+@end)]
+    return this
+  copy: -> 
+    res = new Replacement(@start, @end, @text, @prefix, @suffix)
+    res.selections = @selections.map( (s)->s.copy() )
+    return res
     
 class Pair
-  constructor: (@opener,@closer,@options) ->
-    #
+  constructor: (@opener,@closer,@options = {}) ->
   openerReg: ->
     if typeof @opener == 'string' 
-      new RegExp(Codewave.util.escapeRegExp(@opener))
+      return new RegExp(Codewave.util.escapeRegExp(@opener))
     else
-      @opener
+      return @opener
   closerReg: ->
     if typeof @closer == 'string' 
-      new RegExp(Codewave.util.escapeRegExp(@closer))
+      return new RegExp(Codewave.util.escapeRegExp(@closer))
     else
-      @closer
+      return @closer
   matchAnyParts: ->
-    {
+    return {
       opener: @openerReg()
       closer: @closerReg()
     }
@@ -56,32 +90,32 @@ class Pair
     keys = []
     for key, reg of @matchAnyParts()
       keys.push(key)
-    keys
+    return keys
   matchAnyReg: ->
     groups = []
     for key, reg of @matchAnyParts()
-      groups.push('('+reg.source+')')
-    new RegExp(groups.join('|'))
+      groups.push('('+reg.source+')')  # [pawa python] replace reg.source reg.pattern
+    return new RegExp(groups.join('|'))
   matchAny: (text) ->
-    @matchAnyReg().exec(text)
+    return @matchAnyReg().exec(text)
   matchAnyNamed: (text) ->
-    @_matchAnyGetName(@matchAny(text))
+    return @_matchAnyGetName(@matchAny(text))
   _matchAnyGetName: (match) ->
     if match
       for group, i in match
         if i > 0 and group?
           return @matchAnyPartKeys()[i-1]
-      null
+      return null
   matchAnyLast: (text) ->
     ctext = text
     while match = @matchAny(ctext)
-      ctext = ctext.substr(match.index+1)
+      ctext = ctext.substr(match.index+1)   # [pawa python] replace match.index match.start()
       res = match
-    res
+    return res
   matchAnyLastNamed: (text) ->
-    @_matchAnyGetName(@matchAnyLast(text))
+    return @_matchAnyGetName(@matchAnyLast(text))
   isWapperOf: (pos,text) ->
-    @matchAnyNamed(text.substr(pos.end)) == 'closer' and @matchAnyLastNamed(text.substr(0,pos.start)) == 'opener'
+    return @matchAnyNamed(text.substr(pos.end)) == 'closer' and @matchAnyLastNamed(text.substr(0,pos.start)) == 'opener'
     
 
 @Codewave.util = ( 
@@ -89,7 +123,7 @@ class Pair
     if fullname.indexOf(":") == -1 and !isSpace
       return [null,fullname]
     parts = fullname.split(':')
-    [parts.shift(),parts.join(':') || null]
+    return [parts.shift(),parts.join(':') || null]
 
   splitNamespace: (fullname) ->
     if fullname.indexOf(":") == -1
@@ -109,12 +143,25 @@ class Pair
     Array(Math.ceil(length/txt.length)+1).join(txt).substring(0,length)
 
   getTxtSize: (txt) ->
-    lines = txt.replace(/\r/g,'').split("\n")
+    lines = txt.replace(/\r/g,'').split("\n")  # [pawa python] replace '/\r/g' "'\r'"
     w = 0
     for l in lines
       w = Math.max(w,l.length)
     return new Size(w,lines.length-1)
 
+  reverseStr: (txt) ->
+    return txt.split("").reverse().join("")
+  
+  isArray: (arr) ->
+    return Object.prototype.toString.call( arr ) == '[object Array]'
+  
+  posCollection: (arr) ->
+    if !Codewave.util.isArray(arr)
+      arr == [arr]
+    arr.wrap = (prefix,suffix)->
+      return @map( (p) -> new Replacement(p.start, p.end, '%original%', prefix, suffix))
+    return arr
+    
   StrPos: StrPos
   Pos: Pos
   WrappedPos: WrappedPos

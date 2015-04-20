@@ -1,4 +1,8 @@
-
+# [pawa python]
+#   replace @Codewave.Command.cmdInitialisers command.cmdInitialisersBaseCommand
+#   replace (BaseCommand (command.BaseCommand
+#   replace EditCmd.props editCmdProps
+#   replace EditCmd.setCmds editCmdSetCmds reparse
 
 initCmds = ->
   core = Codewave.Command.cmds.addCmd(new Codewave.Command('core'))
@@ -193,15 +197,60 @@ initCmds = ->
       'cls' : CloseCmd
     },
     'edit':{
-      'cmds' : {
-        'source': Codewave.util.merge(setVarCmd('source'),{
-          'preventParseAll' : true
-        }),
+      'cmds' : EditCmd.setCmds({
         'save':{
           'aliasOf': 'core:exec_parent'
         }
-      },
+      }),
       'cls' : EditCmd
+    },
+    'rename':{
+      'cmds' : {
+        'not_applicable' : """
+          ~~box~~
+          You cant rename a command you did not create yourself.
+          ~~!close|~~
+          ~~/box~~
+          """,
+        'not_found' : """
+          ~~box~~
+          Command not found
+          ~~!close|~~
+          ~~/box~~
+          """
+      }
+      'result' : renameCommand,
+      'parse' : true
+    },
+    'remove':{
+      'cmds' : {
+        'not_applicable' : """
+          ~~box~~
+          You cant remove a command you did not create yourself.
+          ~~!close|~~
+          ~~/box~~
+          """,
+        'not_found' : """
+          ~~box~~
+          Command not found
+          ~~!close|~~
+          ~~/box~~
+          """
+      }
+      'result' : removeCommand,
+      'parse' : true
+    },
+    'alias':{
+      'cmds' : {
+        'not_found' : """
+          ~~box~~
+          Command not found
+          ~~!close|~~
+          ~~/box~~
+          """
+      }
+      'result' : aliasCommand,
+      'parse' : true
     },
     'namespace':{
       'cls' : NameSpaceCmd
@@ -248,11 +297,13 @@ initCmds = ->
       beforeExecute: closePhpForContent
       alterResult: wrapWithPhp
     },
+    'comment': '<?php /* ~~content~~ */ ?>',
     php: '<?php\n\t~~content~~|\n?>',
   })
   
   phpInner = php.addCmd(new Codewave.Command('inner'))
   phpInner.addCmds({
+    'comment': '/* ~~content~~ */',
     'if':   'if(|){\n\t~~content~~\n}',
     'info': 'phpinfo();',
     'echo': 'echo ${id}',
@@ -290,7 +341,9 @@ initCmds = ->
   })
   
   js = Codewave.Command.cmds.addCmd(new Codewave.Command('js'))
+  Codewave.Command.cmds.addCmd(new Codewave.Command('javascript',{ aliasOf: 'js' }))
   js.addCmds({
+    'comment': '/* ~~content~~ */',
     'if':  'if(|){\n\t~~content~~\n}',
     'log':  'if(window.console){\n\tconsole.log(~~content~~|)\n}',
     'function':	'function |() {\n\t~~content~~\n}',
@@ -318,22 +371,31 @@ initCmds = ->
 
 @Codewave.Command.cmdInitialisers.push(initCmds)
 
-setVarCmd = (name) -> 
-  (
-    execute: (instance) ->
-      val = if (p = instance.getParam(0))?
-        p
-      else if instance.content
-        instance.content
-      instance.codewave.vars[name] = val if val?
-  )
+@Codewave.Command.setVarCmd = (name,base={}) -> 
+  base.execute = (instance) ->
+    val = if (p = instance.getParam(0))?
+      p
+    else if instance.content
+      instance.content
+    instance.codewave.vars[name] = val if val?
+  return base
+
+@Codewave.Command.setBoolVarCmd = (name,base={}) -> 
+  base.execute = (instance) ->
+    val = if (p = instance.getParam(0))?
+      p
+    else if instance.content
+      instance.content
+    unless val? and val in ['0','false','no']
+      instance.codewave.vars[name] = true
+  return base
   
 no_execute = (instance) ->
   reg = new RegExp("^("+Codewave.util.escapeRegExp(instance.codewave.brakets) + ')' + Codewave.util.escapeRegExp(instance.codewave.noExecuteChar))
-  instance.str.replace(reg,'$1')
+  return instance.str.replace(reg,'$1')
   
 quote_carret = (instance) ->
-  return instance.content.replace(/\|/g, '||')
+  return instance.content.replace(/\|/g, '||') # [pawa python] replace '/\|/g' "'|'"
 exec_parent = (instance) ->
   if instance.parent?
     res = instance.parent.execute()
@@ -341,18 +403,66 @@ exec_parent = (instance) ->
     instance.replaceEnd = instance.parent.replaceEnd
     return res
 getContent = (instance) ->
-  if instance.codewave.context?
-    instance.codewave.context.content || ''
-wrapWithPhp = (result) ->
+  if instance.codewave.inInstance?
+    return instance.codewave.inInstance.content or ''
+wrapWithPhp = (result,instance) ->
   regOpen = /<\?php\s([\\n\\r\s]+)/g
   regClose = /([\n\r\s]+)\s\?>/g
-  '<?php ' + result.replace(regOpen, '$1<?php ').replace(regClose, ' ?>$1') + ' ?>'
+  return '<?php ' + result.replace(regOpen, '$1<?php ').replace(regClose, ' ?>$1') + ' ?>'
+renameCommand = (instance) ->
+  savedCmds = Codewave.storage.load('cmds')
+  origninalName = instance.getParam([0,'from'])
+  newName = instance.getParam([1,'to'])
+  if origninalName? and newName?
+    cmd = instance.context.getCmd(origninalName)
+    console.log(cmd)
+    if savedCmds[origninalName]? and cmd?
+      unless newName.indexOf(':') > -1
+        newName = cmd.fullName.replace(origninalName,'') + newName
+      cmdData = savedCmds[origninalName]
+      Codewave.Command.cmds.setCmdData(newName,cmdData)
+      cmd.unregister()
+      savedCmds[newName] = cmdData
+      delete savedCmds[origninalName]
+      Codewave.storage.save('cmds',savedCmds)
+      return ""
+    else if cmd? 
+      return "~~not_applicable~~"
+    else 
+      return "~~not_found~~"
+removeCommand = (instance) ->
+  name = instance.getParam([0,'name'])
+  if name?
+    savedCmds = Codewave.storage.load('cmds')
+    cmd = instance.context.getCmd(name)
+    if savedCmds[name]? and cmd?
+      cmdData = savedCmds[name]
+      cmd.unregister()
+      delete savedCmds[name]
+      Codewave.storage.save('cmds',savedCmds)
+      return ""
+    else if cmd? 
+      return "~~not_applicable~~"
+    else 
+      return "~~not_found~~"
+aliasCommand = (instance) ->
+  name = instance.getParam([0,'name'])
+  alias = instance.getParam([1,'alias'])
+  if name? and alias?
+    cmd = instance.context.getCmd(name)
+    if cmd?
+      cmd = cmd.getAliased() or cmd
+      # unless alias.indexOf(':') > -1
+        # alias = cmd.fullName.replace(name,'') + alias
+      Codewave.Command.saveCmd(alias, { aliasOf: cmd.fullName })
+      return ""
+    else 
+      return "~~not_found~~"
 closePhpForContent = (instance) ->
   instance.content = ' ?>'+(instance.content || '')+'<?php '
-class BoxCmd extends @Codewave.BaseCommand
+class BoxCmd extends Codewave.BaseCommand
   init: ->
-    console.log(@instance)
-    @helper = new Codewave.util.BoxHelper(@instance.codewave)
+    @helper = new Codewave.util.BoxHelper(@instance.context)
     @cmd = @instance.getParam(['cmd'])
     if @cmd?
       @helper.openText  = @instance.codewave.brakets + @cmd + @instance.codewave.brakets
@@ -360,36 +470,50 @@ class BoxCmd extends @Codewave.BaseCommand
     @helper.deco = @instance.codewave.deco
     @helper.pad = 2
     
-    if @instance.content
-      bounds = @helper.textBounds(@instance.content)
-      [width, height] = [bounds.width, bounds.height]
+  height: ->
+    if @bounds()?
+      height = @bounds().height
     else
-      width = 50
       height = 3
-    
-    params = ['width']
-    if @instance.params.length > 1 
-      params.push(0)
-    @helper.width = Math.max(@minWidth(), @instance.getParam(params, width))
       
     params = ['height']
     if @instance.params.length > 1 
       params.push(1)
     else if @instance.params.length > 0
       params.push(0)
-    @helper.height = @instance.getParam(params,height)
-    
+    return @instance.getParam(params,height)
+      
+  width: ->
+    if @bounds()?
+      width = @bounds().width
+    else
+      width = 3
+      
+    params = ['width']
+    if @instance.params.length > 1 
+      params.push(0)
+    return Math.max(@minWidth(), @instance.getParam(params, width))
+
+  
+  bounds: ->
+    if @instance.content
+      unless @_bounds?
+        @_bounds = @helper.textBounds(@instance.content)
+      return @_bounds
+      
   result: ->
+    @helper.height = @height()
+    @helper.width = @width()
     return @helper.draw(@instance.content)
   minWidth: ->
     if @cmd?
-      @cmd.length
+      return @cmd.length
     else
-      0
+      return 0
   
-class CloseCmd extends @Codewave.BaseCommand
+class CloseCmd extends Codewave.BaseCommand
   init: ->
-    @helper = new Codewave.util.BoxHelper(@instance.codewave)
+    @helper = new Codewave.util.BoxHelper(@instance.context)
   execute: ->
     box = @helper.getBoxForPos(@instance.getPos())
     if box?
@@ -398,61 +522,74 @@ class CloseCmd extends @Codewave.BaseCommand
     else
       @instance.replaceWith('')
           
-class EditCmd extends @Codewave.BaseCommand
+class EditCmd extends Codewave.BaseCommand
   init: ->
     @cmdName = @instance.getParam([0,'cmd'])
     @verbalize = @instance.getParam([1]) in ['v','verbalize']
     if @cmdName?
-      @finder = @instance.codewave.getFinder(@cmdName) 
+      @finder = @instance.context.getFinder(@cmdName) 
       @finder.useFallbacks = false
       @cmd = @finder.find()
     @editable = if @cmd? then @cmd.isEditable() else true
-    @content = @instance.content
   getOptions: ->
     return {
       allowedNamed: ['cmd']
     }
   result: ->
-    if @content
-      @resultWithContent()
+    if @instance.content
+      return @resultWithContent()
     else
-      @resultWithoutContent()
+      return @resultWithoutContent()
   resultWithContent: ->
-      parser = @instance.getParserForText(@content)
+      parser = @instance.getParserForText(@instance.content)
       parser.parseAll()
-      Codewave.Command.saveCmd(@cmdName, {
-        result: parser.vars.source
-      })
-      ''
+      data = {}
+      for p in EditCmd.props
+        p.writeFor(parser,data)
+      Codewave.Command.saveCmd(@cmdName, data)
+      return ''
+  propsDisplay: ->
+      cmd = @cmd
+      return EditCmd.props.map( (p)-> p.display(cmd) ).filter( (p)-> p? ).join("\n")
   resultWithoutContent: ->
     if !@cmd or @editable
-      source = if @cmd then @cmd.resultStr else ''
       name = if @cmd then @cmd.fullName else @cmdName
       parser = @instance.getParserForText(
         """
         ~~box cmd:"#{@instance.cmd.fullName} #{name}"~~
-        ~~source~~
-        #{source}|
-        ~~/source~~
+        #{@propsDisplay()}
         ~~save~~ ~~!close~~
         ~~/box~~
         """)
       parser.checkCarret = no
       if @verbalize then parser.getText() else parser.parseAll()
-
-class NameSpaceCmd extends @Codewave.BaseCommand
+EditCmd.setCmds = (base) ->
+  for p in EditCmd.props
+    p.setCmd(base)
+  return base
+EditCmd.props = [
+  new Codewave.EditCmdProp.revBool('no_carret',         {opt:'checkCarret'}),
+  new Codewave.EditCmdProp.revBool('no_parse',          {opt:'parse'}),
+  new Codewave.EditCmdProp.bool(   'prevent_parse_all', {opt:'preventParseAll'}),
+  new Codewave.EditCmdProp.bool(   'replace_box',       {opt:'replaceBox'}),
+  new Codewave.EditCmdProp.string( 'name_to_param',     {opt:'nameToParam'}),
+  new Codewave.EditCmdProp.string( 'alias_of',          {var:'aliasOf', carret:true}),
+  new Codewave.EditCmdProp.source( 'help',              {funct:'help', showEmpty:true}),
+  new Codewave.EditCmdProp.source( 'source',            {var:'resultStr', dataName:'result', showEmpty:true, carret:true}),
+]
+class NameSpaceCmd extends Codewave.BaseCommand
   init: ->
     @name = @instance.getParam([0])
-    #
   result: ->
     if @name?
-      @instance.codewave.getRoot().addNameSpace(@name)
+      @instance.codewave.getRoot().context.addNameSpace(@name)
       return ''
     else
-      namespaces = @instance.finder.namespaces
+      namespaces = @instance.context.getNameSpaces()
       txt = '~~box~~\n'
       for nspc in namespaces 
-        txt += nspc+'\n'
+        if nspc != @instance.cmd.fullName
+          txt += nspc+'\n'
       txt += '~~!close|~~\n~~/box~~'
       parser = @instance.getParserForText(txt)
       return parser.parseAll()

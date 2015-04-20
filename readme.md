@@ -26,14 +26,13 @@ You may need to put it on a web server to be able to use the localstorage
 ```
 
 ## ToDo
-
-* error box inside box
-* format in-box commands
-* Create some default commands
+* multi comand support for ClosingPromp
+* comment styles
+  * php outer
+* Create some more default commands
 
 ## devloppement
 
 ```sh
-sass --watch sass:css
-coffee -wmo js js/src
+grunt watch --force
 ```

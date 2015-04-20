@@ -1,10 +1,17 @@
+# [pawa]
+#   replace Codewave.CmdFinder CmdFinder
+
 class @Codewave.CmdFinder
   constructor: (names, options) ->
+    # Codewave.logger.toMonitor(this,'findIn')
+    # Codewave.logger.toMonitor(this,'triggerDetectors')
     if typeof names == 'string'
       names = [names]
     defaults = {
       parent: null
       namespaces: []
+      parentContext: null
+      context: null
       root: Codewave.Command.cmds
       mustExecute: true
       useDetectors: true
@@ -21,6 +28,12 @@ class @Codewave.CmdFinder
         this[key] = @parent[key]
       else
         this[key] = val
+    unless @context?
+      @context = new Codewave.Context(@codewave)
+    if @parentContext?
+      @context.parent = @parentContext
+    if @namespaces?
+      @context.addNamespaces(@namespaces)
   find: ->
     @triggerDetectors()
     @cmd = @findIn(@root)
@@ -33,7 +46,7 @@ class @Codewave.CmdFinder
     paths = {}
     for name in @names 
       [space,rest] = Codewave.util.splitFirstNamespace(name)
-      if space? and !(space in @namespaces)
+      if space? and !(space in @context.getNameSpaces())
         unless space of paths 
           paths[space] = []
         paths[space].push(rest)
@@ -53,23 +66,16 @@ class @Codewave.CmdFinder
   triggerDetectors: ->
     if @useDetectors 
       @useDetectors = false
-      posibilities = new Codewave.CmdFinder(@namespaces,{parent: this,mustExecute: false,useFallbacks: false}).findPosibilities()
+      posibilities = new Codewave.CmdFinder(@context.getNameSpaces(), {parent: this, mustExecute: false, useFallbacks: false}).findPosibilities()
       i = 0
       while i < posibilities.length
         cmd = posibilities[i]
         for detector in cmd.detectors 
           res = detector.detect(this)
           if res?
-            @addNamespaces(res)
-            posibilities = posibilities.concat(new Codewave.CmdFinder(res,{parent: this,mustExecute: false,useFallbacks: false}).findPosibilities())
+            @context.addNamespaces(res)
+            posibilities = posibilities.concat(new Codewave.CmdFinder(res, {parent: this, mustExecute: false, useFallbacks: false}).findPosibilities())
         i++
-  addNamespaces: (spaces) ->
-    if spaces 
-      if typeof spaces == 'string'
-        spaces = [spaces]
-      for space in spaces 
-        if space not in @namespaces 
-          @namespaces.push(space)
   findIn: (cmd,path = null) ->
     unless cmd?
       return null
@@ -82,12 +88,12 @@ class @Codewave.CmdFinder
     @root.init()
     posibilities = []
     for space, names of @getNamesWithPaths()
-      next = @root.getCmd(space)
+      next = @getCmdFollowAlias(space)
       if next? 
         posibilities = posibilities.concat(new Codewave.CmdFinder(names, {parent: this, root: next}).findPosibilities())
-    for nspc in @namespaces
+    for nspc in @context.getNameSpaces()
       [nspcName,rest] = Codewave.util.splitFirstNamespace(nspc,true)
-      next = @root.getCmd(nspcName)
+      next = @getCmdFollowAlias(nspcName)
       if next? 
         posibilities = posibilities.concat(new Codewave.CmdFinder(@applySpaceOnNames(nspc), {parent: this, root: next}).findPosibilities())
     for name in @getDirectNames()
@@ -99,20 +105,30 @@ class @Codewave.CmdFinder
       if @cmdIsValid(fallback)
         posibilities.push(fallback)
     return posibilities
+  getCmdFollowAlias: (name) ->
+    cmd = @root.getCmd(name)
+    if cmd? 
+      cmd.init()
+      if cmd.aliasOf?
+        return cmd.getAliased()
+    return cmd
   cmdIsValid: (cmd) ->
     unless cmd?
       return false
     cmd.init()
     return !@mustExecute or cmd.isExecutable()
+  cmdScore: (cmd) ->
+    score = cmd.depth
+    if cmd.name == 'fallback' 
+        score -= 1000
+    return score
   bestInPosibilities: (poss) ->
     if poss.length > 0
       best = null
       bestScore = null
       for p in poss
-        score = p.depth
-        if p.name == 'fallback' 
-            score -= 1000
-        if best is null or score >= bestScore
+        score = @cmdScore(p)
+        if !best? or score >= bestScore
           bestScore = score
           best = p
       return best;

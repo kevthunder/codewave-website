@@ -1,3 +1,8 @@
+# [pawa python]
+#   replace Codewave.Command.cmds cmds
+#   replace Codewave.Command Command
+#   replace @Codewave.Command. ''
+
 
 _optKey = (key,dict,defVal = null) ->
   # optional Dictionary key
@@ -27,6 +32,8 @@ class @Codewave.Command
     }
     @options = {}
     @finalOptions = null
+  parent: ->
+    return @_parent
   setParent: (value) ->
     if @_parent != value
       @_parent = value
@@ -37,7 +44,7 @@ class @Codewave.Command
           @name
       )
       @depth = (
-        if @_parent?
+        if @_parent? and @_parent.depth?
         then @_parent.depth + 1
         else 0
       )
@@ -45,106 +52,69 @@ class @Codewave.Command
     if !@_inited
       @_inited = true
       @parseData(@data)
-    this
+    return this
+  unregister: ->
+    @_parent.removeCmd(this)
   isEditable: ->
-    @resultStr?
+    return @resultStr? or @aliasOf?
   isExecutable: ->
-    for p in ['resultStr','resultFunct','aliasOf','cls','executeFunct']
+    aliased = @getAliased()
+    if aliased?
+      return aliased.isExecutable()
+    for p in ['resultStr','resultFunct','cls','executeFunct']
       if this[p]?
         return true
-    false
-  resultIsAvailable: (instance = null) ->
-    if instance? and instance.cmdObj?
-      return instance.cmdObj.resultIsAvailable()
-    aliased = @getAliased(instance)
+    return false
+  resultIsAvailable: ->
+    aliased = @getAliased()
     if aliased?
-      return aliased.resultIsAvailable(instance)
+      return aliased.resultIsAvailable()
     for p in ['resultStr','resultFunct']
       if this[p]?
         return true
-    false
-  getDefaults: (instance = null) ->
+    return false
+  getDefaults: ->
     res = {}
-    aliased = @getAliased(instance)
+    aliased = @getAliased()
     if aliased?
-      res = Codewave.util.merge(res,aliased.getDefaults(instance))
+      res = Codewave.util.merge(res,aliased.getDefaults())
     res = Codewave.util.merge(res,@defaults)
-    if instance? and instance.cmdObj?
-      res = Codewave.util.merge(res,instance.cmdObj.getDefaults())
-    res
-  result: (instance) ->
-    if instance.cmdObj?
-      return instance.cmdObj.result()
-    aliased = @getAliased(instance)
-    if aliased?
-      return aliased.result(instance)
-    if @resultFunct?
-      return @resultFunct(instance)
-    if @resultStr?
-      @resultStr
-  execute: (instance) ->
-    if instance.cmdObj?
-      return instance.cmdObj.execute()
-    aliased = @getAliased(instance)
-    if aliased?
-      return aliased.execute(instance)
-    if @executeFunct?
-      return @executeFunct(instance)
-  getExecutableObj: (instance) ->
-    @init()
-    if @cls?
-      return new @cls(instance)
-    aliased = @getAliased(instance)
-    if aliased?
-      return aliased.getExecutableObj(instance)
-  getAliased: (instance = null) ->
-    if instance? and instance.cmd == this and instance.aliasedCmd?
-      return instance.aliasedCmd or null
+    return res
+  _aliasedFromFinder: (finder) ->
+      finder.useFallbacks = false
+      finder.mustExecute = false
+      return finder.find()
+  getAliased: ->
     if @aliasOf?
-      if instance?
-        codewave = instance.codewave
-      else
-        codewave = new Codewave()
-      aliasOf = @aliasOf
-      if instance?
-        aliasOf = aliasOf.replace('%name%',instance.cmdName)
-        @finder = instance._getFinder(aliasOf)
-        @finder.useFallbacks = false
-        aliased = @finder.find()
-      else
-        aliased = codewave.getCmd(aliasOf)
-      if instance?
-        instance.aliasedCmd = aliased or false
-      return aliased
+      context = new Codewave.Context()
+      return @_aliasedFromFinder(context.getFinder(@aliasOf))
   setOptions: (data) ->
     for key, val of data
       if key of @defaultOptions
         @options[key] = val
-  getOptions: (instance = null) ->
-    if instance? and instance.cmdOptions?
-      return instance.cmdOptions
+  _optionsForAliased: (aliased) ->
     opt = {}
     opt = Codewave.util.merge(opt,@defaultOptions)
-    aliased = @getAliased(instance)
     if aliased?
-      opt = Codewave.util.merge(opt,aliased.getOptions(instance))
-    opt = Codewave.util.merge(opt,@options)
-    if instance? and instance.cmdObj?
-      opt = Codewave.util.merge(opt,instance.cmdObj.getOptions())
-    if instance?
-      instance.cmdOptions = opt
-    return opt
-  getOption: (key,instance = null) ->
-    options = @getOptions(instance)
+      opt = Codewave.util.merge(opt,aliased.getOptions())
+    return Codewave.util.merge(opt,@options)
+  getOptions: ->
+    return @_optionsForAliased(@getAliased())
+  getOption: (key) ->
+    options = @getOptions()
     if key of options
       return options[key]
+  help: ->
+    cmd = @getCmd('help')
+    if cmd?
+      return cmd.init().resultStr
   parseData: (data) ->
     @data = data
     if typeof data == 'string'
       @resultStr = data
       @options['parse'] = true
       return true
-    else if data?
+    else if data? # [pawa python] replace data? "isinstance(data,dict)"
       return @parseDictData(data)
     return false
   parseDictData: (data) ->
@@ -164,9 +134,9 @@ class @Codewave.Command
     @setOptions(data)
     
     if 'help' of data
-      @addCmd(this,new Command('help',data['help'],this))
+      @addCmd(new Command('help',data['help'],this))
     if 'fallback' of data
-      @addCmd(this,new Command('fallback',data['fallback'],this))
+      @addCmd(new Command('fallback',data['fallback'],this))
       
     if 'cmds' of data
       @addCmds(data['cmds'])
@@ -180,7 +150,7 @@ class @Codewave.Command
       @removeCmd(exists)
     cmd.setParent(this)
     @cmds.push(cmd)
-    cmd
+    return cmd
   removeCmd: (cmd) ->
     if (i = @cmds.indexOf(cmd)) > -1
       @cmds.splice(i, 1)
@@ -193,6 +163,8 @@ class @Codewave.Command
     for cmd in @cmds
       if cmd.name == name
         return cmd
+  setCmdData: (fullname,data) ->
+    @setCmd(fullname,new Codewave.Command(fullname.split(':').pop(),data))
   setCmd: (fullname,cmd) ->
     [space,name] = Codewave.util.splitFirstNamespace(fullname)
     if space?
@@ -211,14 +183,21 @@ class @Codewave.Command
 @Codewave.Command.initCmds = ->
   Codewave.Command.cmds = new Codewave.Command(null,{
     'cmds':{
-      'hello':'Hello, World!'
+      'hello':{
+        help: """
+        "Hello, world!" is typically one of the simplest programs possible in
+        most programming languages, it is by tradition often (...) used to
+        verify that a language or system is operating correctly -wikipedia
+        """
+        result: 'Hello, World!'
+      }
     }
   })
   for initialiser in Codewave.Command.cmdInitialisers
     initialiser()
 
 @Codewave.Command.saveCmd = (fullname, data) ->
-  Codewave.Command.cmds.setCmd(fullname,new Codewave.Command(fullname.split(':').pop(),data))
+  Codewave.Command.cmds.setCmdData(fullname,data)
   savedCmds = Codewave.storage.load('cmds')
   unless savedCmds?
     savedCmds = {}
@@ -229,18 +208,19 @@ class @Codewave.Command
   savedCmds = Codewave.storage.load('cmds')
   if savedCmds? 
     for fullname, data of savedCmds
-      Codewave.Command.cmds.setCmd(fullname, new Codewave.Command(fullname.split(':').pop(), data))
+      Codewave.Command.cmds.setCmdData(fullname, data)
 
+@Codewave.Command.resetSaved = ->
+  Codewave.storage.save('cmds',{})
   
 
 
 class @Codewave.BaseCommand
   constructor: (@instance) ->
-    #
   init: ->
     #
   resultIsAvailable: ->
-    return this["result"]?
+    return this["result"]? # [pawa] replace this["result"]? 'hasattr(self,"result")'
   getDefaults: ->
     return {}
   getOptions: ->

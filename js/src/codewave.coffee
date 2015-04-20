@@ -1,46 +1,66 @@
-
+# [pawa]
+#   replace 'class @Codewave' 'class Codewave():'
+#   replace /cpos.(\w+)/ cpos['$1']
+#   replace 'new Codewave(' Codewave(
+#   replace '@Codewave.init = ->' 'def init():'
 
 
 class @Codewave
-  constructor: (@editor,options = {}) ->
+  constructor: (@editor, options = {}) ->
+    # Codewave.logger.toMonitor(this,'runAtCursorPos')
     @marker = '[[[[codewave_marquer]]]]'
-    @nameSpaces = []
     @vars = {}
     
-    @parent = options['parent'] or null
-    delete options['parent']
     defaults = {
       'brakets' : '~~',
       'deco' : '~',
       'closeChar' : '/',
       'noExecuteChar' : '!',
       'carretChar' : '|',
-      'checkCarret' : true
+      'checkCarret' : true,
+      'inInstance' : null
     }
+    @parent = options['parent']
     
     for key, val of defaults
       if key of options
         this[key] = options[key]
-      else if @parent? 
+      else if @parent? and key != 'parent'
         this[key] = @parent[key]
       else
         this[key] = val
     @editor.bindedTo(this) if @editor?
-  onActivationKey: ->
-    Codewave.logger.log('activation key')
     
-    if(cmd = @commandOnCursorPos()?.init())
-      Codewave.logger.log(cmd)
-      cmd.execute()
+    @context = new Codewave.Context(this)
+    if @inInstance?
+      @context.parent = @inInstance.context
+  onActivationKey: ->
+    @process = new Codewave.Process()
+    Codewave.logger.log('activation key')
+    @runAtCursorPos()
+    # Codewave.logger.resume()
+    @process = null
+  runAtCursorPos: ->
+    if @editor.allowMultiSelection()
+      @runAtMultiPos(@editor.getMultiSel())
     else
-      cpos = @editor.getCursorPos()
-      if cpos.start == cpos.end
-        @addBrakets(cpos.start,cpos.end)
+      @runAtPos(@editor.getCursorPos())
+  runAtPos: (pos)->
+    @runAtMultiPos([pos])
+  runAtMultiPos: (multiPos)->
+    if multiPos.length > 0
+      cmd = @commandOnPos(multiPos[0].end)
+      if cmd?
+        if multiPos.length > 1
+          cmd.setMultiPos(multiPos)
+        cmd.init()
+        Codewave.logger.log(cmd)
+        cmd.execute()
       else
-        @promptClosingCmd(cpos.start,cpos.end)
-  commandOnCursorPos: ->
-    cpos = @editor.getCursorPos()
-    @commandOnPos(cpos.end)
+        if multiPos[0].start == multiPos[0].end
+          @addBrakets(multiPos)
+        else
+          @promptClosingCmd(multiPos[0].start, multiPos[0].end)
   commandOnPos: (pos) ->
     if @precededByBrakets(pos) and @followedByBrakets(pos) and @countPrevBraket(pos) % 2 == 1 
       prev = pos-@brakets.length
@@ -54,14 +74,14 @@ class @Codewave
       next = @findNextBraket(pos-1)
       if next is null or @countPrevBraket(prev) % 2 != 0 
         return null
-    return new Codewave.CmdInstance(this,prev,@editor.textSubstr(prev,next+@brakets.length))
+    return new Codewave.PositionedCmdInstance(this,prev,@editor.textSubstr(prev,next+@brakets.length))
   nextCmd: (start = 0) ->
     pos = start
     while f = @findAnyNext(pos ,[@brakets,"\n"])
       pos = f.pos + f.str.length
       if f.str == @brakets
         if beginning?
-          return new Codewave.CmdInstance(this, beginning, @editor.textSubstr(beginning, f.pos+@brakets.length))
+          return new Codewave.PositionedCmdInstance(this, beginning, @editor.textSubstr(beginning, f.pos+@brakets.length))
         else
           beginning = f.pos
       else
@@ -86,9 +106,9 @@ class @Codewave
     i = 0
     while start = @findPrevBraket(start)
       i++
-    i
+    return i
   isEndLine: (pos) -> 
-    @editor.textSubstr(pos,pos+1) == "\n" or pos + 1 >= @editor.textLen()
+    return @editor.textSubstr(pos,pos+1) == "\n" or pos + 1 >= @editor.textLen()
   findLineStart: (pos) -> 
     p = @findAnyNext(pos ,["\n"], -1)
     if p then p.pos+1 else 0
@@ -96,31 +116,32 @@ class @Codewave
     p = @findAnyNext(pos ,["\n","\r"])
     if p then p.pos else @editor.textLen()
   findPrevBraket: (start) -> 
-    @findNextBraket(start,-1)
+    return @findNextBraket(start,-1)
   findNextBraket: (start,direction = 1) -> 
     f = @findAnyNext(start ,[@brakets,"\n"], direction)
     
     f.pos if f and f.str == @brakets
   findPrev: (start,string) -> 
-    @findNext(start,string,-1)
+    return @findNext(start,string,-1)
   findNext: (start,string,direction = 1) -> 
     f = @findAnyNext(start ,[string], direction)
     f.pos if f
+  
   findAnyNext: (start,strings,direction = 1) -> 
-    pos = start
-    while true  
-    
-      return null unless 0 <= pos < @editor.textLen()
-      for stri in strings
-        [start, end] = [pos, pos + stri.length * direction]
-        
-        [start, end] = [end, start] if end < start
-        if stri == @editor.textSubstr(start,end)
-          return new Codewave.util.StrPos(
-            if direction < 0 then pos-stri.length else pos,
-            stri
-          )
-      pos += direction
+    if direction > 0
+      text = @editor.textSubstr(start,@editor.textLen())
+    else
+      text = @editor.textSubstr(0,start)
+    bestPos = null
+    for stri in strings
+      pos = if direction > 0 then text.indexOf(stri) else text.lastIndexOf(stri)
+      if pos != -1
+        if !bestPos? or bestPos*direction > pos*direction
+          bestPos = pos
+          bestStr = stri
+    if bestStr?
+      return new Codewave.util.StrPos((if direction > 0 then bestPos + start else bestPos),bestStr)
+    return null
   findMatchingPair: (startPos,opening,closing,direction = 1) ->
     pos = startPos
     nested = 0
@@ -134,86 +155,39 @@ class @Codewave
       else
         nested++
     null
-  addBrakets: (start, end) ->
-    if start == end
-      @editor.insertTextAt(@brakets+@brakets,start)
-    else
-      @editor.insertTextAt(@brakets,end)
-      @editor.insertTextAt(@brakets,start)
-    @editor.setCursorPos(end+@brakets.length)
+  addBrakets: (pos) ->
+    pos = Codewave.util.posCollection(pos)
+    replacements = pos.wrap(@brakets,@brakets).map( (r)->r.selectContent() )
+    @editor.applyReplacements(replacements)
   promptClosingCmd: (start, end) ->
     @closingPromp.stop() if @closingPromp?
-    @closingPromp = (new Codewave.ClosingPromp(this,start, end)).begin()
+    @closingPromp = (new Codewave.ClosingPromp(this,start, end)).begin() # [pawa python] replace /\(new (.*)\).begin/ $1.begin reparse
   parseAll: (recursive = true) ->
     pos = 0
     while cmd = @nextCmd(pos)
       pos = cmd.getEndPos()
       @editor.setCursorPos(pos)
-      if recursive and cmd.content? and (!cmd.getCmd()? or !cmd.cmd.getOption('preventParseAll'))
+      cmd.init()
+      if recursive and cmd.content? and (!cmd.getCmd()? or !cmd.getOption('preventParseAll'))
         parser = new Codewave(new Codewave.TextParser(cmd.content), {parent: this})
         cmd.content = parser.parseAll()
-      cmd.init()
-      # console.log(cmd)
       if cmd.execute()?
         if cmd.replaceEnd?
           pos = cmd.replaceEnd
         else
           pos = @editor.getCursorPos().end
-    @getText()
+    return @getText()
   getText: ->
-    @editor.text()
-  getNameSpaces: () ->
-    npcs = ['core'].concat(@nameSpaces)
-    if @parent?
-      npcs = npcs.concat(@parent.getNameSpaces())
-    if @context?
-      if @context.finder?
-        npcs = npcs.concat(@context.finder.namespaces)
-      npcs = npcs.concat([@context.cmd.fullName])
-    return Codewave.util.unique(npcs)
-  addNameSpace: (name) ->
-    @nameSpaces.push(name)
-  removeNameSpace: (name) ->
-    @nameSpaces = @nameSpaces.filter (n) -> n isnt name
-  getCmd: (cmdName,nameSpaces = []) ->
-    finder = @getFinder(cmdName,nameSpaces)
-    finder.find()
-  getFinder: (cmdName,nameSpaces = []) ->
-    return new Codewave.CmdFinder(cmdName, {
-      namespaces: Codewave.util.union(@getNameSpaces(), nameSpaces)
-      useDetectors: @isRoot()
-      codewave: this
-    })
+    return @editor.text()
   isRoot: ->
-    return !@parent? and (!@context? or !@context.finder?)
+    return !@parent? and (!@inInstance? or !@inInstance.finder?)
   getRoot: ->
     if @isRoot
-      this
+      return this
     else if @parent?
-      @parent.getRoot()
-    else if @context?
-      @context.codewave.getRoot()
-  getCommentChar: ->
-    '<!-- %s -->'
-  wrapComment: (str) ->
-    cc = @getCommentChar()
-    if cc.indexOf('%s') > -1
-      cc.replace('%s',str)
-    else
-      cc + ' ' + str + ' ' + cc
-  wrapCommentLeft: (str = '') ->
-    cc = @getCommentChar()
-    console.log()
-    if (i = cc.indexOf('%s')) > -1
-      cc.substr(0,i) + str
-    else
-      cc + ' ' + str
-  wrapCommentRight: (str = '') ->
-    cc = @getCommentChar()
-    if (i = cc.indexOf('%s')) > -1
-      str + cc.substr(i+2)
-    else
-      str + ' ' + cc
+      return @parent.getRoot()
+    else if @inInstance?
+      return @inInstance.codewave.getRoot()
   removeCarret: (txt) ->
     tmp = '[[[[quoted_carret]]]]'
     reCarret = new RegExp(Codewave.util.escapeRegExp(@carretChar), "g")
@@ -222,13 +196,13 @@ class @Codewave
     txt.replace(reQuoted,tmp).replace(reCarret,'').replace(reTmp, @carretChar)
   getCarretPos: (txt) ->
     reQuoted = new RegExp(Codewave.util.escapeRegExp(@carretChar+@carretChar), "g")
-    txt = txt.replace(reQuoted, ' ')
+    txt = txt.replace(reQuoted, ' ') # [pawa python] replace reQuoted self.carretChar+self.carretChar
     if (i = txt.indexOf(@carretChar)) > -1
       return i
-  regMarker: (flags="g") ->
-    new RegExp(Codewave.util.escapeRegExp(@marker), flags)
+  regMarker: (flags="g") -> # [pawa python] replace flags="g" flags=0 
+    return new RegExp(Codewave.util.escapeRegExp(@marker), flags)
   removeMarkers: (text) ->
-    text.replace(@regMarker(),'')
+    return text.replace(@regMarker(),'') # [pawa python] replace @regMarker() self.marker 
 
 @Codewave.init = ->
   Codewave.Command.initCmds()
