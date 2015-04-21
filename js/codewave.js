@@ -1076,7 +1076,7 @@
     DomKeyListener.prototype.startListening = function(target) {
       target.onkeydown = (function(_this) {
         return function(e) {
-          if (e.keyCode === 69 && e.ctrlKey) {
+          if (e.keyCode === 69 && e.ctrlKey && e.shiftKey) {
             e.preventDefault();
             if (_this.onActivationKey != null) {
               return _this.onActivationKey();
@@ -1113,9 +1113,13 @@
     }
 
     TextAreaEditor.prototype.bindedTo = function(codewave) {
-      this.onActivationKey = function() {
-        return codewave.onActivationKey();
-      };
+      this.onActivationKey = (function(_this) {
+        return function() {
+          if (document.activeElement === _this.obj) {
+            return codewave.onActivationKey();
+          }
+        };
+      })(this);
       return this.startListening(document);
     };
 

@@ -20,6 +20,9 @@ body {
   font-family: "Montserrat", sans-serif;
   color: #333; }
 
+@media only screen and (max-width: 500px) {
+  body {
+    font-size: 0.8em; } }
 a {
   color: #73ae2d;
   text-decoration: none; }
@@ -43,7 +46,7 @@ header {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   width: 100%;
-  padding: 30px 30px 38px 16px;
+  padding: 30px 11px 30px 16px;
   position: absolute;
   top: 0; }
   header:after {
@@ -54,48 +57,60 @@ header {
     position: fixed;
     z-index: 50;
     background-color: #fff;
-    padding-top: 5px;
+    padding-top: 0;
     padding-bottom: 0;
-    border-bottom: 1px solid #73ae2d; }
+    border-bottom: 5px solid #73ae2d; }
     header.fixed .logo {
-      margin: 0; }
+      margin: 0;
+      margin-right: 15px; }
       header.fixed .logo img {
         height: 50px; }
-    header.fixed nav a span.label {
-      display: none; }
-    header.fixed nav .sublimeText a span.icon {
-      height: 35px;
-      width: 35px;
-      background: url(../img/sublimetext-logo-small.png) no-repeat 0 top;
-      margin-bottom: 0; }
-    header.fixed nav .sublimeText a:hover span.icon {
-      background-position: 0 -85px; }
-    header.fixed nav .npp a span.icon {
-      height: 35px;
-      width: 43px;
-      background: url(../img/npp-logo-small.png) no-repeat 0 top;
-      margin-bottom: 0; }
-    header.fixed nav .npp a:hover span.icon {
-      background-position: 0 -78px; }
-    header.fixed nav .js a {
-      padding-top: 0;
-      height: 35px; }
-    header.fixed nav ul li ul {
+    header.fixed nav {
       padding-top: 5px; }
-    header.fixed nav ul li ul li {
-      vertical-align: top; }
+      header.fixed nav a span.label {
+        display: none; }
+      header.fixed nav .sublimeText a span.icon {
+        height: 35px;
+        width: 35px;
+        background: url(../img/sublimetext-logo-small.png) no-repeat 0 3px;
+        margin-bottom: 0; }
+      header.fixed nav .sublimeText a:hover span.icon {
+        background-position: 0 -67px; }
+      header.fixed nav .npp a span.icon {
+        height: 35px;
+        width: 43px;
+        background: url(../img/npp-logo-small.png) no-repeat 0 top;
+        margin-bottom: 0; }
+      header.fixed nav .npp a:hover span.icon {
+        background-position: 0 -65px; }
+      header.fixed nav .js a {
+        padding: 0 5px; }
+      header.fixed nav ul li ul {
+        padding-top: 0; }
+      header.fixed nav ul li ul li {
+        vertical-align: top; }
+        header.fixed nav ul li ul li a {
+          line-height: 40px;
+          display: block;
+          height: 40px; }
     header.fixed .social {
-      bottom: 15px; }
+      padding-top: 5px;
+      bottom: 0; }
+      header.fixed .social a {
+        height: 40px; }
   header .logo {
     margin-bottom: 15px;
+    margin-right: 15px;
     float: left; }
+    header .logo a {
+      display: block; }
+      header .logo a img {
+        display: block; }
   header nav {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-    width: 66%;
-    float: right;
-    padding: 0 0 0 15px; }
+    float: left; }
     header nav ul, header nav li {
       margin: 0;
       padding: 0;
@@ -104,6 +119,11 @@ header {
       color: #666; }
       header nav a:hover {
         text-decoration: none; }
+    header nav .download > a {
+      padding-left: 50px; }
+      @media only screen and (max-width: 960px) {
+        header nav .download > a {
+          display: none; } }
     header nav .examplesLink {
       display: none; }
     header nav .sublimeText a span.icon {
@@ -124,83 +144,82 @@ header {
       background-position: 0 -98px; }
     header nav .js a {
       padding-top: 55px; }
-    header nav ul li {
-      display: inline-block;
-      padding: 0 30px 0 0; }
-      header nav ul li a {
-        display: block; }
-      header nav ul li ul {
-        padding-top: 15px; }
-        header nav ul li ul li {
-          border-left: 5px solid #73ae2d;
-          padding: 0 30px 0 15px; }
+    header nav ul {
+      vertical-align: top; }
+      header nav ul li {
+        display: inline-block;
+        padding: 0; }
+        header nav ul li a {
+          padding-top: 22px;
+          padding-right: 5px;
+          display: inline-block;
+          font-size: 0.9em; }
+        header nav ul li ul {
+          display: inline-block;
+          position: relative;
+          top: 5px;
+          border-bottom: 5px solid #fff;
+          padding: 0 0 0 5px;
+          padding-top: 15px; }
+          header nav ul li ul li a {
+            margin-right: 5px;
+            padding: 0 15px 0 15px;
+            border-bottom: 5px solid #73ae2d;
+            position: relative;
+            top: 5px; }
+            header nav ul li ul li a:hover {
+              border-color: #333; }
   header .social {
-    position: absolute;
-    bottom: 72px;
-    right: 30px; }
+    float: right; }
     header .social ul, header .social li {
       margin: 0;
       padding: 0;
       list-style: none; }
-    header .social ul li {
-      display: inline-block;
-      padding: 0 0 0 0; }
-      header .social ul li a {
-        font-size: 1.6em;
-        display: block;
-        position: relative;
-        /* '¯áå' */ }
-        header .social ul li a span {
-          top: 100%;
-          left: 50%;
-          width: 80px;
-          margin: 0 0 0 -40px;
-          font-size: 0.5em;
-          position: absolute;
-          text-align: center;
-          display: none; }
-        header .social ul li a:after {
-          content: "";
-          font-family: "fontello";
-          font-style: normal;
-          font-weight: normal;
-          speak: none;
-          display: inline-block;
-          text-decoration: none;
-          font-size: inherit;
-          width: 1em;
-          margin-right: 0.2em;
-          text-align: center;
-          /* opacity: .8; */
-          /* For safety - reset parent styles, that can break glyph codes */
-          font-variant: normal;
-          text-transform: none;
-          /* fix buttons height, for twitter bootstrap */
-          line-height: 1em;
-          /* Animation center compensation - margins should be symmetric */
-          /* remove if not needed */
-          margin-left: 0.2em;
-          /* you can be more comfortable with increased icons size */
-          /* font-size: 120%; */
-          /* Uncomment for 3D effect */
-          /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */ }
-        header .social ul li a:hover {
-          text-decoration: none; }
-          header .social ul li a:hover span {
-            display: block; }
-        header .social ul li a:before {
-          position: absolute;
-          z-index: 1;
-          top: 0.16em;
-          left: 0.38em;
+    header .social ul {
+      position: relative;
+      top: 5px;
+      border-bottom: 5px solid #fff;
+      padding: 0 0 0 5px; }
+      header .social ul li {
+        display: inline-block;
+        padding: 0 0 0 0; }
+        header .social ul li a {
+          margin-right: 5px;
+          position: relative;
+          border-bottom: 5px solid #73ae2d;
+          top: 5px;
+          font-size: 1.6em;
           display: block;
-          text-indent: 0;
-          color: #fff;
-          text-align: center; }
-        header .social ul li a:after {
-          font-size: 1.4em;
-          display: block;
-          text-indent: 0; }
+          position: relative;
+          color: #666; }
+          header .social ul li a:hover {
+            border-color: #333;
+            color: #333; }
+          header .social ul li a span {
+            padding: 5px 0px;
+            top: 45px;
+            left: 50%;
+            width: 80px;
+            margin: 0 0 0 -40px;
+            font-size: 0.5em;
+            position: absolute;
+            text-align: center;
+            display: none; }
+          header .social ul li a:hover {
+            text-decoration: none; }
+            header .social ul li a:hover span {
+              display: block; }
+          header .social ul li a:before {
+            z-index: 1;
+            top: 0.16em;
+            left: 0.38em;
+            display: block;
+            text-indent: 0;
+            text-align: center; }
+          header .social ul li a:after {
+            font-size: 1.4em;
+            display: block;
+            text-indent: 0; }
     header .social .twitter a {
       /* '¯áé' */ }
       header .social .twitter a:before {
@@ -295,6 +314,7 @@ section#intro {
 
 .tryItLabel {
   padding: 0 0 0 30px;
+  width: 7.5em;
   margin: 0 50% 0 0;
   display: inline-block;
   vertical-align: bottom;
@@ -343,6 +363,18 @@ section#examples {
     left: 33%;
     top: -3em; }
 
+@media only screen and (max-width: 700px) {
+  section#intro p {
+    padding-right: 0;
+    width: auto; }
+
+  section#examples {
+    padding-top: 0px; }
+    section#examples .tryItLabel {
+      position: relative;
+      left: auto;
+      top: auto;
+      padding-bottom: 15px; } }
 .odd {
   background-color: #eee; }
 
@@ -374,6 +406,19 @@ section#examples {
     padding: 10px;
     width: 100%; }
 
+@media only screen and (max-width: 600px) {
+  .example .explaination {
+    padding-left: 15px;
+    padding-bottom: 0px;
+    float: none;
+    width: auto; }
+  .example .tryIt {
+    padding-top: 0px;
+    float: none;
+    width: auto; }
+    .example .tryIt textarea {
+      border-left: 0 none;
+      border-top: 5px solid #73ae2d; } }
 section#download {
   padding: 30px 0 30px 0; }
   section#download h2 {
