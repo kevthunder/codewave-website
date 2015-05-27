@@ -1,6 +1,22 @@
 module.exports = function (grunt) {
-    grunt.initConfig({
-
+  grunt.initConfig({
+    coffee: {
+      compile: {
+        options: {
+          sourceMap: true
+        },
+        files: [
+          {
+            expand: true,
+            flatten: true,
+            cwd: 'js/src/',
+            src: ['*.coffee'],
+            dest: 'js/',
+            ext: '.js'
+          },
+        ]
+      }
+    },
     sass: {
       dist: {
         files: {
@@ -13,17 +29,18 @@ module.exports = function (grunt) {
           atBegin: true,
           livereload: true
         },
-        // js:  { files: 'js/*.js', tasks: [ 'uglify' ] },
         sass:  { files: 'sass/*.sass', tasks: [ 'sass' ] },
+        coffee:  { files: ['js/src/**/*.coffee'], tasks: [ 'coffee' ] }
     }
-});
+  });
 
-// load plugins
-grunt.loadNpmTasks('grunt-contrib-watch');
-grunt.loadNpmTasks('grunt-contrib-sass');
+  // load plugins
+  grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-coffee');
+  grunt.loadNpmTasks('grunt-contrib-sass');
 
-// register at least this one task
-grunt.registerTask('default', [ 'sass' ]);
+  // register at least this one task
+  grunt.registerTask('default', [ 'coffee', 'sass' ]);
 
 
 };

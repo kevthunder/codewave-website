@@ -69,8 +69,13 @@ header
       img
         height: 50px
         display:block
+        max-width: inherit
     nav
       padding-top: 5px
+      .download > a    
+        padding-top: 22px
+        @media only screen and (max-width: 960px)
+          display: none
       a 
         span.label
           display: none
@@ -81,7 +86,7 @@ header
           background: url(../img/sublimetext-logo-small.png) no-repeat 0 3px
           margin-bottom: 0
         &:hover span.icon
-          background-position: 0 -67px
+          background-position-y: 0 -67px
       .npp a
         span.icon
           height: 35px
@@ -89,7 +94,7 @@ header
           background: url(../img/npp-logo-small.png) no-repeat 0 top
           margin-bottom: 0
         &:hover span.icon
-          background-position: 0 -65px
+          background-position-y: 0 -65px
       .js a
         padding: 0 5px
       ul li ul
@@ -101,10 +106,22 @@ header
           display: block
           height: 40px
     .social
+      float: right
+      position: static
+      top: auto
+      right: auto
       padding-top: 5px
       bottom: 0
       a 
         height: 40px
+        
+  &.notfixed
+    nav
+      @media only screen and (max-width: 920px)
+        float: None
+      .download > a    
+        @media only screen and (max-width: 1080px)
+          display: none
   .logo
     margin-bottom: 15px
     margin-right: 15px
@@ -113,12 +130,14 @@ header
       display: block
       img
         display: block
+        max-width: 100%
   .navigations
   nav
     -webkit-box-sizing: border-box
     -moz-box-sizing: border-box
     box-sizing: border-box
     float: left
+    padding-top: 3px
     ul, li
       margin: 0
       padding: 0
@@ -129,8 +148,7 @@ header
         text-decoration: none
     .download > a    
       padding-left: 50px
-      @media only screen and (max-width: 960px)
-        display: none
+      padding-top: 80px
     .examplesLink
       display: none
     .sublimeText a
@@ -139,18 +157,20 @@ header
         width: 52px
         display: block
         background: url(../img/sublimetext-logo.png) no-repeat 0 top
+        margin: auto
         margin-bottom: 3px
       &:hover span.icon
-        background-position: 0 -105px
+        background-position-y: -105px
     .npp a
       span.icon
         height: 52px
         width: 64px
         display: block
         background: url(../img/npp-logo.png) no-repeat 0 top
+        margin: auto
         margin-bottom: 3px
       &:hover span.icon
-        background-position: 0 -98px
+        background-position-y: -98px
     .js a
       padding-top: 55px
     ul 
@@ -180,7 +200,9 @@ header
               &:hover
                 border-color: $almostBlack
   .social
-    float: right
+    position: absolute
+    top: 0px
+    right: 8px
     ul, li
       margin: 0
       padding: 0
