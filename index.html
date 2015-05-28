@@ -59,7 +59,7 @@
   </nav>
 </header>
 <section id="intro">
-  <p class="intro">Create abbreviation for you own code snippets and expand them with a push of a button, or use those already provided. Write code faster with this tool designed to give you what you need to be more productive without leaving your favorite text editor.</p>
+  <p class="intro">Create abbreviations for your own code snippets or use those already provided and expand them with a simple shortcut. Write code faster with this tool designed to give you what you need to be more productive without leaving your favorite text editor.</p>
 </section>
 
 <section id="examples">
@@ -75,8 +75,8 @@
   </article>
   <article class="example even">
     <div class="explaination">
-      <p>You can easily get the double pair of tildes("~") needed for codewave commands by pressing the same key.</p>
-      <p>Click on the empty text area on the right then do key combination.</p>
+      <p>You can easily get the double pair of tildes("~") needed for codewave commands by pressing the same keys.</p>
+      <p>Click on the empty text area on the right and then press "Ctrl"+"shift"+"E" ( or "Cmd"+"shift"+"E" in osX)</p>
     </div>
     <div class="tryIt">
       <div class="filename"><span class="ext">.js</span></div>
@@ -94,7 +94,9 @@
   </article>
   <article class="example even">
     <div class="explaination">
-      <p>Codewave allows you to make you own commands (or abbreviations) put your content inside "source" the do "save". Try adding any text that is on your mind.</p>
+      <p>Codewave allows you to make your own commands (or abbreviations).</p>
+      <p>Put your content inside "source" and then save by putting your cursor in "~~save~~" and using the shortcut.</p>
+      <p>Try adding any text that is on your mind.</p>
     </div>
     <div class="tryIt">
       <div class="filename"><span class="ext">.js</span></div>
@@ -103,7 +105,7 @@
   </article>
   <article class="example odd">
     <div class="explaination">
-      <p>If you did the last step right, you should see your text when youdo the following command. It is now saved and you can use it whenever you want.</p>
+      <p>If you did the last step right, you should see your text when you expand the following command. It is now saved and you can use it whenever you want.</p>
     </div>
     <div class="tryIt">
       <div class="filename"><span class="ext">.js</span></div>
@@ -121,7 +123,7 @@
   </article>
   <article class="example odd">
     <div class="explaination">
-      <p>Codewave come with many prexisting commands. Here an example of javascript abreviations</p>
+      <p>Codewave comes with many pre-existing commands. Here is an example of JavaScript abbreviations</p>
     </div>
     <div class="tryIt">
       <div class="filename"><span class="ext">.js</span></div>
@@ -136,7 +138,7 @@
   </article>
   <article class="example even">
     <div class="explaination">
-      <p>CodeWave come with the exellent Emmet ( <a href="http://emmet.io/">http://emmet.io/</a> ) to provide event more abreviations. Emmet will fire automaticaly if you are in a html or css file and no other command of the same name were defined.</p>
+      <p>CodeWave comes with the excellent Emmet ( <a href="http://emmet.io/">http://emmet.io/</a> ) to provide event more abbreviations. Emmet abbreviations will be used automatically if you are in a HTML or CSS file.</p>
     </div>
     <div class="tryIt">
       <div class="filename"><span class="ext">.html</span></div>
@@ -149,7 +151,19 @@
   </article>
   <article class="example odd">
     <div class="explaination">
-      <p>Commands are stored in name spaces and some of the namespaces are active depending of the context or they can be called explicitly. The two following commands are the same and will display the currently  active namespace. The first command command works because the core namespace is active.</p>
+      <p>Commands are stored in namespaces. The same command can have different results depending on the namespace.</p>
+    </div>
+    <div class="tryIt">
+      <textarea name="" class="codewave" data-lang="txt">
+~~js:each~~
+~~php:outer:each~~
+~~php:inner:each~~
+      </textarea>
+    </div>
+  </article>
+  <article class="example even">
+    <div class="explaination">
+      <p>Some of the namespaces are active depending on the context. The following commands are the same and will display the currently active namespace. The first command command works because the core namespace is active.</p>
     </div>
     <div class="tryIt">
       <div class="filename"><span class="ext">.js</span></div>
@@ -159,37 +173,10 @@
       </textarea>
     </div>
   </article>
-  <article class="example even">
-    <div class="explaination">
-      <p>you can make an namespace active with the following command.</p>
-      <p>Then check the namespaces again</p>
-    </div>
-    <div class="tryIt">
-      <div class="filename"><span class="ext">.txt</span></div>
-      <textarea name="" class="codewave" data-lang="txt">
-~~namespace php~~
-~~namespace~~
-      </textarea>
-    </div>
-  </article>
   <article class="example odd">
     <div class="explaination">
-      <p>All the dialogs(windows) of codewave are made with the command "box" and you can use it in your own commands. you can also use a "close" command to make it easy to get rid of the window.</p>
-    </div>
-    <div class="tryIt">
-      <div class="filename"><span class="ext">.js</span></div>
-      <textarea name="" class="codewave" data-lang="js">
-~~box~~
-The box will scale with the content you put in it
-~~close|~~
-~~/box~~
-      </textarea>
-    </div>
-  </article>
-  <article class="example even">
-    <div class="explaination">
-      <p>Codewave can be set to detect a command's context and alter the output accordingly.</p>
-      <p>For PHP, this means you will get the PHP tags when you need it.</p>
+      <p>In addition to detecting the document type, Codewave can detect the context from the surrounding text.</p>
+      <p>In a PHP file, it means Codewave will add the PHP tags when you need them.</p>
     </div>
     <div class="tryIt">
       <div class="filename"><span class="ext">.php</span></div>
@@ -202,6 +189,33 @@ The box will scale with the content you put in it
       </textarea>
     </div>
   </article>
+  <article class="example even">
+    <div class="explaination">
+      <p>You can make a namespace active with the following command.</p>
+      <p>Then check the namespaces again</p>
+    </div>
+    <div class="tryIt">
+      <div class="filename"><span class="ext">.txt</span></div>
+      <textarea name="" class="codewave" data-lang="txt">
+~~namespace php~~
+~~namespace~~
+      </textarea>
+    </div>
+  </article>
+  <!--<article class="example even">
+    <div class="explaination">
+      <p>All the dialogs(windows) of codewave are made with the command "box" and you can use it in your own commands. you can also use a "close" command to make it easy to get rid of the window.</p>
+    </div>
+    <div class="tryIt">
+      <div class="filename"><span class="ext">.js</span></div>
+      <textarea name="" class="codewave" data-lang="js">
+~~box~~
+The box will scale with the content you put in it
+~~close|~~
+~~/box~~
+      </textarea>
+    </div>
+  </article>-->
 </section>
 
 <section id="download">
