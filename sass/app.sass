@@ -180,7 +180,7 @@ header
     .download > a    
       padding-left: 50px
       padding-top: 80px
-      @media only screen and (max-width: 1080px)
+      @media only screen and (max-width: 1170px)
         display: none
     .examplesLink
       display: none
@@ -213,13 +213,13 @@ header
               top: 5px
               &:hover
                 border-color: $almostBlack
-    @media only screen and (max-width: 1080px)
+    @media only screen and (max-width: 1170px)
       position: static
       float: None
       margin-left: $partLeft
       clear: both
       padding-top: 40px
-      padding-left: 30px
+      padding-left: 18px
     @media only screen and (max-width: 700px)
       margin-left: 0
       padding: 0
@@ -412,6 +412,12 @@ section#download
     color: $almostBlack
     font-size: 1.5em
     
+.link-get
+  display: block
+  @include icon-link-ext
+  &:before
+    color: $almostBlack
+    font-size: 1.5em
 
 textarea.full
   -webkit-box-sizing: border-box
