@@ -1,10 +1,10 @@
 require('dotenv').config()
 const gulp = require('gulp');
 const sass = require('gulp-sass');
-var gls = require('gulp-live-server')
-var open = require('gulp-open')
-var gutil = require( 'gulp-util' );
-var ftp = require( 'vinyl-ftp' );
+const gls = require('gulp-live-server')
+const open = require('gulp-open')
+const log = require('fancy-log');
+const ftp = require( 'vinyl-ftp' );
  
 sass.compiler = require('node-sass');
 
@@ -69,7 +69,7 @@ gulp.task( 'deploy', gulp.series('build', function () {
 		user:     process.env.FTP_USER,
 		password: process.env.FTP_PASS,
 		parallel: 10,
-		log:      gutil.log
+		log:      log
 	} );
 
 	var globs = [
