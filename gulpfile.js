@@ -1,7 +1,10 @@
+require('dotenv').config()
 const gulp = require('gulp');
 const sass = require('gulp-sass');
 var gls = require('gulp-live-server')
 var open = require('gulp-open')
+var gutil = require( 'gulp-util' );
+var ftp = require( 'vinyl-ftp' );
  
 sass.compiler = require('node-sass');
 
@@ -23,6 +26,12 @@ gulp.task('watch', function () {
     .on('error', swallowError)
 })
 
+gulp.task('copyLib', function() {
+  return gulp.src([
+    require.resolve('codewave/dist/codewave.min.js')
+  ], {allowEmpty:true})
+    .pipe(gulp.dest('./js'));
+});
 
 gulp.task('serve', function (done) {
   var server = gls.static('.')
@@ -46,9 +55,37 @@ gulp.task('open', function () {
     .pipe(open(options))
 })
 
-gulp.task('build', gulp.series('sass', function (done) {
+gulp.task('build', gulp.series('copyLib', 'sass', function (done) {
   console.log('Build Complete')
   done()
 }))
 
 gulp.task('demo', gulp.series('build', 'serve', 'open', 'watch'))
+
+gulp.task( 'deploy', gulp.series('build', function () {
+
+	var conn = ftp.create( {
+		host:     process.env.FTP_HOST,
+		user:     process.env.FTP_USER,
+		password: process.env.FTP_PASS,
+		parallel: 10,
+		log:      gutil.log
+	} );
+
+	var globs = [
+		'css/**',
+		'font/**',
+		'img/**',
+		'js/**',
+		'index.html',
+		'favicon.ico'
+	];
+
+	// using base = '.' will transfer everything to /public_html correctly
+	// turn off buffering in gulp.src for best performance
+
+	return gulp.src( globs, { base: '.', buffer: false } )
+		.pipe( conn.newer( '/' ) ) // only upload newer files
+		.pipe( conn.dest( '/' ) );
+
+}));

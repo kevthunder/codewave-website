@@ -7,3 +7,4 @@ _pawa_tmp/
 /codewave-py
 /node_modules
 /npm-debug.log
+.env
