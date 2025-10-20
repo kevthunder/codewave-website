@@ -1,6 +1,6 @@
 /.sass-cache
-/js/*.map
-/css/*.map
+/webroot/js/*.map
+/webroot/css/*.map
 /js/*.src.coffee
 _pawa_tmp/
 /codewave_py

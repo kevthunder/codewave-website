@@ -16,7 +16,7 @@ function swallowError (error) {
 gulp.task('sass', function () {
   return gulp.src('./sass/**/*.sass')
     .pipe(sass().on('error', sass.logError))
-    .pipe(gulp.dest('./css'));
+    .pipe(gulp.dest('./webroot/css'));
 });
 
 gulp.task('watch', function () {
@@ -30,7 +30,7 @@ gulp.task('copyLib', function() {
   return gulp.src([
     require.resolve('codewave/dist/codewave.min.js')
   ], {allowEmpty:true})
-    .pipe(gulp.dest('./js'));
+    .pipe(gulp.dest('./webroot/js'));
 });
 
 gulp.task('serve', function (done) {
